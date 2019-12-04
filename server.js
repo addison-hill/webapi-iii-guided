@@ -13,9 +13,13 @@ function logger(req, res, next) {
 //write a gatekeeper middleware that reads a password from the headers and if the password is 'mellon', let it continue,
 // if not, send back status code 401 and a message
 
-function gatekeeper(req, res, next) {
-  console.log("at the gate");
-  next();
+function gateKeeper(req, res, next) {
+  const password = req.headers.password;
+  if (password && password.toLowerCase() === "mellon") {
+    next();
+  } else {
+    res.status(401).json({ you: "shall not pass!!" });
+  }
 }
 
 server.use(helmet()); //you can use it hear for globally. Or you can use locally by using in your functions
@@ -37,7 +41,7 @@ server.get("/echo", (req, res) => {
   res.send(req.headers);
 });
 
-server.get("/area51", gatekeeper(), (req, res) => {
+server.get("/area51", gateKeeper, (req, res) => {
   res.send(req.headers);
 });
 
